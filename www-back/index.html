@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura-ink.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script type="module">
+        fetch("entries")
+        .then(async function(res){
+            new Vue({
+                el: '#elmEntries',
+                data: {
+                    entries: await res.json(),
+                },
+            });
+        })
+        .catch(function(e){
+            alert(e);
+        });
+
+        function fetchStatus(){
+            const frontUrl = "http://localhost:8100/aoep8754xx";
+
+            fetch(`${frontUrl}`)
+            .then(async function(res){
+                const status = await res.text();
+                elmStatus.innerText = status;
+                if(status === "opening"){
+                    elmStatusBtn.innerText = "to CLOSE🔒";
+                    elmStatusBtn.onclick = async function(e){
+                        await fetch(`${frontUrl}?close`);
+                        fetchStatus();
+                    };
+                }else{
+                    elmStatusBtn.innerText = "to OPEN🐣";
+                    elmStatusBtn.onclick = async function(e){
+                        await fetch(`${frontUrl}?open`);
+                        fetchStatus();
+                    };
+                }
+            })
+            .catch(function(e){
+                alert(e);
+            });
+        }
+
+        fetchStatus();
+    </script>
+    <style>
+        #elmEntries td:nth-child(1){
+            width: 3em;
+            text-align: right;
+        }
+        #elmEntries td:nth-child(2){
+            width: 6em;
+        }
+        #elmEntries td:nth-child(2) img{
+            max-height: 6em;
+            margin-bottom: 0px;
+        }
+        #elmEntries td:nth-child(5){
+            text-align: right;
+        }
+        #elmMenu{
+            float: right;
+        }
+    </style>
+    <title>Ballotbox - backend</title>
+</head>
+
+<body>
+    <div id="elmMenu">
+        現在: <span id="elmStatus">-</span>
+        <button id="elmStatusBtn">-</button>
+    </div>
+
+    <h3>エントリー済みの作品たち</h3>
+    <table id="elmEntries">
+        <tr>
+            <th>票数<div style="font-size:60%;">(ネット)</div></th>
+            <th>作品</th>
+            <th>タイトル</th>
+            <th>コメント</th>
+            <th></th>
+        </tr>
+        <tr v-for="entry in entries">
+            <td>{{entry.nBallots}}({{entry.nBallotsM}})</td>
+            <td><img :src="`./photo/${entry.id}-${entry.sPhotoFile}`"></td>
+            <td>{{entry.sTitle}}</td>
+            <td>{{entry.sComment}}</td>
+            <td><a :href="`delete?id=${entry.id}`" :onclick="`return confirm('${entry.sTitle} を消しますか？');`" title="消す">[🗑]</a></td>
+        </tr>
+    </table>
+
+    <h3>作品をエントリーする</h3>
+    <form action="entry" method="POST" enctype="multipart/form-data">
+    <dl>
+        <dt>タイトル</dt>
+        <dd><input name="sTitle" type="text"></dd>
+        <dt>コメント</dt>
+        <dd><textarea name="sComment"></textarea></dd>
+        <dt>画像</dt>
+        <dd><input name="fPhoto" type="file"></dd>
+        <dt><hr></dt>
+        <dd><input type="submit"></dd>
+    </dl>
+    </form>
+</body>
+
+</html>

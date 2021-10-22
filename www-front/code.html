@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura-ink.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script type="module">
+        elmSubmit.onclick = function(e){
+            fetch("code",{
+                method: "POST",
+                headers: {
+                    "content-type": "application/json", 
+                },
+                body: JSON.stringify({ email: elmEmail.value }),
+            })
+            .then(async function(res){
+                if(res.status === 200){
+                    alert("メールを確認してください。");
+                }else{
+                    alert(await res.text());
+                }
+            })
+            .catch(function(e){
+                alert(e);
+            });
+        };
+    </script>
+    <title>Ballotbox</title>
+</head>
+
+<body>
+    <h3>メールアドレスを入力してください</h3>
+    <input id="elmEmail" type="text"> <button id="elmSubmit">投票URLをこのメールに送る</button>
+</body>
+
+</html>

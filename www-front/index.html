@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura-ink.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script type="module">
+        fetch("entries")
+        .then(async function(res){
+            new Vue({
+                el: '#elmEntries',
+                data: {
+                    entries: await res.json(),
+                },
+            });
+        })
+        .catch(function(e){
+            alert(e);
+        });
+
+        {
+            const code = location.search.substring(1);
+            elmCode.value = code;
+        }
+
+        elmForm.onsubmit = function(e){
+            if(e.target.id.value === ""){
+                return confirm("選択されていませんがよろしいですか？");
+            }
+        };
+    </script>
+    <style>
+        #elmEntries>li{
+            width: 30%;
+            list-style: none;
+            display: inline-block;
+            margin-inline: 1%;
+            vertical-align: top;
+        }
+        #elmEntries>li img{
+            margin-bottom: 0em;
+        }
+        #elmEntries>li>label>div>input{
+            font-size: 1em;
+        }
+        #elmSubmit{
+            font-size: 1.5em;
+        }
+    </style>
+    <title>Ballotbox</title>
+</head>
+
+<body>
+    <form id="elmForm" action="ballot" method="POST">
+        <h3>作品を選んでください</h3>
+        <ul id="elmEntries">
+            <li v-for="entry in entries">
+                <label>
+                    <div><input type="radio" name="id" :value="`${entry.id}`">{{entry.sTitle}}</div>
+                </label>
+                <img :src="`./photo/${entry.id}-${entry.sPhotoFile}`">
+                <div>{{entry.sComment}}</div>
+            </li>
+        </ul>
+
+        <hr>
+        <input id="elmCode" type="hidden" name="code">
+        <button id="elmSubmit">チェックをつけた作品に投票する</button>
+    </form>
+</body>
+
+</html>
