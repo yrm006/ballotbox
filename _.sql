@@ -2,7 +2,7 @@ BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "TBallot" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
 	"sCode"	TEXT NOT NULL DEFAULT (hex(randomblob(4))) UNIQUE,
-	"sEmail"	TEXT CHECK((sEmailisNULL) or (0<length(sEMail))) UNIQUE,
+	"sEmail"	TEXT CHECK((sEmail is NULL) or (0<length(sEMail))) UNIQUE,
 	"dCreated"	TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"pEntry"	INTEGER,
 	"dBallotted"	TEXT

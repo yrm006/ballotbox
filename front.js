@@ -7,7 +7,7 @@ import { SmtpClient } from "https://raw.githubusercontent.com/yrm006/deno-smtp/m
 
 
 let g_bOpen = false;
-const g_sPassword = "aoep8754xx";
+const g_sPassword = "CF12D87C-6816-4F1D-A12E-20AA5A628D3E";
 
 async function isOpen(ctx, next){
     if(ctx.request.url.pathname === `/${g_sPassword}`){
@@ -95,7 +95,7 @@ const router = new Router();{
                 from: '"Ballotbox" <fkpc@kani-robocon.com>',
                 to: email,
                 subject: "your ballot-url is",
-                content: `http://192.168.24.125:8100/?${code}`,
+                content: `http://192.168.24.125:8110/?${code}`,
             });
             await smtp.close();
                                                                             console.log("a ballot mail was sent. ", email);
@@ -127,7 +127,7 @@ const router = new Router();{
 }
 
 const app = new Application();{
-    const port = 8100;
+    const port = 8110;
 
     app.use(async function(ctx, next){
                                                                         console.log(`--- ${new Date()} - ${ctx.request.method} ${ctx.request.url.pathname}`);
