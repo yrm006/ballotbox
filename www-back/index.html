@@ -58,6 +58,7 @@
         #elmEntries td:nth-child(2) img{
             max-height: 6em;
             margin-bottom: 0px;
+            width: 100%;
         }
         #elmEntries td:nth-child(5){
             text-align: right;
@@ -86,7 +87,11 @@
         </tr>
         <tr v-for="entry in entries">
             <td>{{entry.nBallots}}({{entry.nBallotsM}})</td>
-            <td><img :src="`./photo/${entry.id}-${entry.sPhotoFile}`"></td>
+            <td>
+                <a :href="`./video/${entry.id}-${entry.sVideoFile}`">
+                    <img :src="`./photo/${entry.id}-${entry.sPhotoFile}`">
+                </a>
+            </td>
             <td>{{entry.sTitle}}</td>
             <td>{{entry.sComment}}</td>
             <td><a :href="`delete?id=${entry.id}`" :onclick="`return confirm('${entry.sTitle} を消しますか？');`" title="消す">[🗑]</a></td>
@@ -102,6 +107,8 @@
         <dd><textarea name="sComment"></textarea></dd>
         <dt>画像</dt>
         <dd><input name="fPhoto" type="file"></dd>
+        <dt>動画</dt>
+        <dd><input name="fVideo" type="file"></dd>
         <dt><hr></dt>
         <dd><input type="submit"></dd>
     </dl>

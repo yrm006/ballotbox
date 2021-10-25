@@ -30,10 +30,16 @@ const router = new Router();{
         });
     });
 
+    router.get('/video/:id-:filename', async function(ctx){
+        await send(ctx, `${ctx.params.id}-${ctx.params.filename}`, {
+            root: './entry-video',
+        });
+    });
+
     router.get("/entries", async function(ctx){
         let r = null;
         const db = new DB("_.db");{
-            r = db.queryEntries("select id,sTitle,sComment,sPhotoFile,(select count(*) from TBallot where pEntry=TEntry.id) as nBallots,(select count(*) from TBallot where pEntry=TEntry.id and sEmail is not NULL) as nBallotsM from TEntry order by nBallots DESC");
+            r = db.queryEntries("select id,sTitle,sComment,sPhotoFile,sVideoFile,(select count(*) from TBallot where pEntry=TEntry.id) as nBallots,(select count(*) from TBallot where pEntry=TEntry.id and sEmail is not NULL) as nBallotsM from TEntry order by nBallots DESC");
             db.close();
         }
         ctx.response.body = r;
@@ -54,7 +60,6 @@ const router = new Router();{
         const body = await ctx.request.body({ type: 'form-data'});
         const form = await body.value.read({ maxFileSize: 104_857_600});
         const v = form.fields;
-        const f = form.files[0];
 
         const db = new DB("_.db");
         db.query("BEGIN");
@@ -63,12 +68,21 @@ const router = new Router();{
 
             const id = db.lastInsertRowId;
 
-            Deno.renameSync(f.filename, `./entry-photo/${id}-${f.originalName}`);
-            db.query("UPDATE TEntry set sPhotoFile=? where id=?", [f.originalName, id]);
+            for(const f of form.files){
+                if(f.name === "fPhoto"){
+                    Deno.renameSync(f.filename, `./entry-photo/${id}-${f.originalName}`);
+                    db.query("UPDATE TEntry set sPhotoFile=? where id=?", [f.originalName, id]);
+                }else
+                if(f.name === "fVideo"){
+                    Deno.renameSync(f.filename, `./entry-video/${id}-${f.originalName}`);
+                    db.query("UPDATE TEntry set sVideoFile=? where id=?", [f.originalName, id]);
+                }else
+                {}
+            }
 
             db.query("COMMIT");
         }catch(e){
-            ctx.response.body = "check your some inputs.";
+            ctx.response.body = `check your some inputs.(${e})`;
             return;
         }
 

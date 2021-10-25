@@ -59,10 +59,16 @@ const router = new Router();{
         });
     });
 
+    router.get('/video/:id-:filename', async function(ctx){
+        await send(ctx, `${ctx.params.id}-${ctx.params.filename}`, {
+            root: './entry-video',
+        });
+    });
+
     router.get("/entries", async function(ctx){
         let r = null;
         const db = new DB("_.db");{
-            r = db.queryEntries("select id,sTitle,sComment,sPhotoFile from TEntry ORDER BY RANDOM()");
+            r = db.queryEntries("select id,sTitle,sComment,sPhotoFile,sVideoFile from TEntry ORDER BY RANDOM()");
             db.close();
         }
         ctx.response.body = r;

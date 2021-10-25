@@ -37,9 +37,11 @@
             display: inline-block;
             margin-inline: 1%;
             vertical-align: top;
+            margin-bottom: 3em;
         }
         #elmEntries>li img{
             margin-bottom: 0em;
+            width: 96%;
         }
         #elmEntries>li>label>div>input{
             font-size: 1em;
@@ -54,12 +56,15 @@
 <body>
     <form id="elmForm" action="ballot" method="POST">
         <h3>作品を選んでください</h3>
+        <p>クリックして動画も見れます</p>
         <ul id="elmEntries">
             <li v-for="entry in entries">
                 <label>
                     <div><input type="radio" name="id" :value="`${entry.id}`">{{entry.sTitle}}</div>
                 </label>
-                <img :src="`./photo/${entry.id}-${entry.sPhotoFile}`">
+                <a :href="`./video/${entry.id}-${entry.sVideoFile}`">
+                    <img :src="`./photo/${entry.id}-${entry.sPhotoFile}`">
+                </a>
                 <div>{{entry.sComment}}</div>
             </li>
         </ul>
