@@ -62,7 +62,7 @@
                 <label>
                     <div><input type="radio" name="id" :value="`${entry.id}`">{{entry.sTitle}}</div>
                 </label>
-                <a :href="`./video/${entry.id}-${entry.sVideoFile}`">
+                <a :href="`video.html?./video/${entry.id}-${entry.sVideoFile}`">
                     <img :src="`./photo/${entry.id}-${entry.sPhotoFile}`">
                 </a>
                 <div>{{entry.sComment}}</div>

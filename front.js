@@ -37,7 +37,7 @@ const router = new Router();{
         const code = ctx.request.url.search.substring(1);
 
         if(code === ""){
-            ctx.response.redirect("/code.html");
+            ctx.response.redirect("code.html");
         }else{
             let r = null;
             const db = new DB("_.db");{
@@ -48,7 +48,7 @@ const router = new Router();{
             if(r.length){
                 await next();
             }else{
-                ctx.response.redirect("/error.html");
+                ctx.response.redirect("error.html");
             }
         }
     });
@@ -124,9 +124,9 @@ const router = new Router();{
         const db = new DB("_.db");{
             db.query("UPDATE TBallot SET pEntry=?, dBallotted=CURRENT_TIMESTAMP WHERE sCode=? and dBallotted is NULL", [id, code]);
             if(db.changes === 1){
-                ctx.response.redirect("/thanks.html");
+                ctx.response.redirect("thanks.html");
             }else{
-                ctx.response.redirect("/error.html");
+                ctx.response.redirect("error.html");
             }
         }
     });
@@ -146,7 +146,7 @@ const app = new Application();{
     app.use(async function(ctx){
         try{
             await send(ctx, ctx.request.url.pathname, {
-                root: `${Deno.cwd()}/www-front`,
+                root: './www-front',
                 index: "index.html",
             });
         }catch(e){}

@@ -53,7 +53,7 @@ const router = new Router();{
             db.close();
         }
 
-        ctx.response.redirect("/");
+        ctx.response.redirect("./");
     });
 
     router.post("/entry", async function(ctx){
@@ -86,7 +86,7 @@ const router = new Router();{
             return;
         }
 
-        ctx.response.redirect("/");
+        ctx.response.redirect("./");
 
 
 
