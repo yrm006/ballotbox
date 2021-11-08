@@ -1,13 +1,19 @@
-//% deno run --allow-net --allow-read --allow-write front.js
 import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { SmtpClient } from "https://raw.githubusercontent.com/yrm006/deno-smtp/master/smtp.ts"; // Original: "https://deno.land/x/smtp/mod.ts"
 
+// #Configulations#
+const g_nPort = 8110;
+const g_sPassword = "11C87255-878A-4F04-94B6-490FDE1E9BE6";
+const g_sMailSMTP = "127.0.0.1";
+const g_sMailFrom = '"Ballotbox" <xxx@yyy.zzz>';
+const g_sMailSubj = "your ballot-url is";
+const g_sMailURL  = "http://localhost:8110/";
+
 
 
 let g_bOpen = false;
-const g_sPassword = "CF12D87C-6816-4F1D-A12E-20AA5A628D3E";
 
 async function isOpen(ctx, next){
     if(ctx.request.url.pathname === `/${g_sPassword}`){
@@ -24,9 +30,9 @@ async function isOpen(ctx, next){
         }else
         {
             await send(ctx, "close.html", {
-                root: `${Deno.cwd()}/www-front`,
+                root: './www-front',
             });
-            }
+        }
     }
 }
 
@@ -95,13 +101,13 @@ const router = new Router();{
         {
             const smtp = new SmtpClient({content_encoding:"8bit"});
             await smtp.connect({
-              hostname: "127.0.0.1",
+              hostname: g_sMailSMTP,
             });
             await smtp.send({
-                from: '"Ballotbox" <fkpc@kani-robocon.com>',
+                from: g_sMailFrom,
                 to: email,
-                subject: "your ballot-url is",
-                content: `http://192.168.24.125:8110/?${code}`,
+                subject: g_sMailSubj,
+                content: `${g_sMailURL}?${code}`,
             });
             await smtp.close();
                                                                             console.log("a ballot mail was sent. ", email);
@@ -112,7 +118,7 @@ const router = new Router();{
             ctx.response.status = 200;
         }else{
             ctx.response.status = 500;
-            ctx.response.body = "そのアドレスは利用できません";
+            ctx.response.body = "The email address can't be used.";
         }
     });
 
@@ -133,8 +139,6 @@ const router = new Router();{
 }
 
 const app = new Application();{
-    const port = 8110;
-
     app.use(async function(ctx, next){
                                                                         console.log(`--- ${new Date()} - ${ctx.request.method} ${ctx.request.url.pathname}`);
         await next();
@@ -144,16 +148,18 @@ const app = new Application();{
     app.use(router.routes());
     app.use(router.allowedMethods());
     app.use(async function(ctx){
-        try{
-            await send(ctx, ctx.request.url.pathname, {
-                root: './www-front',
-                index: "index.html",
-            });
-        }catch(e){}
+        if(ctx.request.method === "GET"){
+            try{
+                await send(ctx, ctx.request.url.pathname, {
+                    root: './www-front',
+                    index: "index.html",
+                });
+            }catch(e){}
+        }
     });
-                                                                        console.log('running on port ', port);
+                                                                        console.log('running on port ', g_nPort);
     await app.listen({
-        port: port,
+        port: g_nPort,
         // secure: true,
         // certFile: "server_crt.pem",
         // keyFile: "server_key.pem",

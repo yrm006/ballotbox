@@ -1,8 +1,13 @@
-//% deno run --allow-net --allow-read --allow-write back.js
 import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { decode as base64decode } from "https://deno.land/std/encoding/base64.ts";
+
+// #Configulations#
+const g_nPort = 8111;
+const g_sAdminName = "admin";
+const g_sAdminPass = "d8c93l=K";
+const g_sFrontURL = "http://localhost:8110/11C87255-878A-4F04-94B6-490FDE1E9BE6";
 
 
 
@@ -11,7 +16,7 @@ async function doAuth(ctx, next){
         const auth = ctx.request.headers.get("Authorization");
         if(auth){
             const userpass = (new TextDecoder().decode(base64decode( auth.split(" ")[1] ))).split(":");
-            authed = ( userpass[0]==="kani" && userpass[1]==="robo" );
+            authed = ( userpass[0]===g_sAdminName && userpass[1]===g_sAdminPass );
         }
     }
 
@@ -34,6 +39,10 @@ const router = new Router();{
         await send(ctx, `${ctx.params.id}-${ctx.params.filename}`, {
             root: './entry-video',
         });
+    });
+
+    router.get("/front-url", async function(ctx){
+        ctx.response.body = g_sFrontURL;
     });
 
     router.get("/entries", async function(ctx){
@@ -87,22 +96,10 @@ const router = new Router();{
         }
 
         ctx.response.redirect("./");
-
-
-
-        // let r = null;
-        // let id = Number.parseInt(ctx.request.url.searchParams.get("id"));
-        // const db = new DB("_.db");{
-        //     r = db.queryEntries("select id,sName,nAge,sCode,sClass,sTitle,sPR,sThumbFile,sVideoFile,sSourceFile,datetime(dCreated,'+9 hours') as dCreatedJST from TEntry where id=?", [id]);
-        //     db.close();
-        // }
-        // ctx.response.body = r[0];
     });
 }
 
 const app = new Application();{
-    const port = 8111;
-
     app.use(async function(ctx, next){
                                                                         console.log(`--- ${new Date()} - ${ctx.request.method} ${ctx.request.url.pathname}`);
         await next();
@@ -112,16 +109,18 @@ const app = new Application();{
     app.use(router.routes());
     app.use(router.allowedMethods());
     app.use(async function(ctx){
-        try{
-            await send(ctx, ctx.request.url.pathname, {
-                root: './www-back',
-                index: "index.html",
-            });
-        }catch(e){}
+        if(ctx.request.method === "GET"){
+            try{
+                await send(ctx, ctx.request.url.pathname, {
+                    root: './www-back',
+                    index: "index.html",
+                });
+            }catch(e){}
+        }
     });
-                                                                        console.log('running on port ', port);
+                                                                        console.log('running on port ', g_nPort);
     await app.listen({
-        port: port,
+        port: g_nPort,
         // secure: true,
         // certFile: "server_crt.pem",
         // keyFile: "server_key.pem",

@@ -39,8 +39,8 @@
             }
         };
 
-        function fetchStatus(){
-            const frontUrl = "http://localhost:8110/CF12D87C-6816-4F1D-A12E-20AA5A628D3E";
+        async function fetchStatus(){
+            const frontUrl = await (await fetch("front-url")).text();
 
             fetch(`${frontUrl}`)
             .then(async function(res){
