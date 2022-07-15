@@ -2,21 +2,14 @@ import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { SmtpClient } from "https://raw.githubusercontent.com/yrm006/deno-smtp/master/smtp.ts"; // Original: "https://deno.land/x/smtp/mod.ts"
-
-// #Configulations#
-const g_nPort = 8110;
-const g_sPassword = "11C87255-878A-4F04-94B6-490FDE1E9BE6";
-const g_sMailSMTP = "127.0.0.1";
-const g_sMailFrom = '"Ballotbox" <xxx@yyy.zzz>';
-const g_sMailSubj = "your ballot-url is";
-const g_sMailURL  = "http://localhost:8110/";
+import * as config from "./config.js";
 
 
 
 let g_bOpen = false;
 
 async function isOpen(ctx, next){
-    if(ctx.request.url.pathname === `/${g_sPassword}`){
+    if(ctx.request.url.pathname === `/${config.sPassword}`){
         const open = ctx.request.url.search.substring(1);
         if(open === ""){
             ctx.response.body = g_bOpen ? "opening" : "closing";
@@ -101,13 +94,13 @@ const router = new Router();{
         {
             const smtp = new SmtpClient({content_encoding:"8bit"});
             await smtp.connect({
-              hostname: g_sMailSMTP,
+              hostname: config.sMailSMTP,
             });
             await smtp.send({
-                from: g_sMailFrom,
+                from: config.sMailFrom,
                 to: email,
-                subject: g_sMailSubj,
-                content: `${g_sMailURL}?${code}`,
+                subject: config.sMailSubj,
+                content: `${config.sMailURL}?${code}`,
             });
             await smtp.close();
                                                                             console.log("a ballot mail was sent. ", email);
@@ -157,9 +150,9 @@ const app = new Application();{
             }catch(e){}
         }
     });
-                                                                        console.log('running on port ', g_nPort);
+                                                                        console.log('running on port ', config.nFrontPort);
     await app.listen({
-        port: g_nPort,
+        port: config.nFrontPort,
         // secure: true,
         // certFile: "server_crt.pem",
         // keyFile: "server_key.pem",

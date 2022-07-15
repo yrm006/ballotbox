@@ -2,12 +2,7 @@ import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { decode as base64decode } from "https://deno.land/std/encoding/base64.ts";
-
-// #Configulations#
-const g_nPort = 8111;
-const g_sAdminName = "admin";
-const g_sAdminPass = "d8c93l=K";
-const g_sFrontURL = "http://localhost:8110/11C87255-878A-4F04-94B6-490FDE1E9BE6";
+import * as config from "./config.js";
 
 
 
@@ -16,7 +11,7 @@ async function doAuth(ctx, next){
         const auth = ctx.request.headers.get("Authorization");
         if(auth){
             const userpass = (new TextDecoder().decode(base64decode( auth.split(" ")[1] ))).split(":");
-            authed = ( userpass[0]===g_sAdminName && userpass[1]===g_sAdminPass );
+            authed = ( userpass[0]===config.sAdminName && userpass[1]===config.sAdminPass );
         }
     }
 
@@ -42,7 +37,7 @@ const router = new Router();{
     });
 
     router.get("/front-url", async function(ctx){
-        ctx.response.body = g_sFrontURL;
+        ctx.response.body = config.sFrontURL;
     });
 
     router.get("/entries", async function(ctx){
@@ -118,9 +113,9 @@ const app = new Application();{
             }catch(e){}
         }
     });
-                                                                        console.log('running on port ', g_nPort);
+                                                                        console.log('running on port ', config.nBackPort);
     await app.listen({
-        port: g_nPort,
+        port: config.nBackPort,
         // secure: true,
         // certFile: "server_crt.pem",
         // keyFile: "server_key.pem",

@@ -4,8 +4,9 @@ A ballot system.
 
 ## How to use
 
-1. Configure 'back.js' and 'front.js'.
-2. Hit the following commands in a shell.
+1. ```cp config.sample.js config.js```
+1. Configure 'config.js'.
+1. Hit the following commands in a shell.
 
 ```
 % cd ${your_path}
