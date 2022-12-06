@@ -20,8 +20,8 @@ async function isOpen(ctx, next){
     }else{
         if(g_bOpen){
             await next();
-        }else
-        {
+        }else{
+            ctx.response.headers.set("Cache-Control", "max-age=0, no-cache, no-store");
             await send(ctx, "close.html", {
                 root: './www-front',
             });
@@ -55,12 +55,14 @@ const router = new Router();{
     router.get('/photo/:id-:filename', async function(ctx){
         await send(ctx, `${ctx.params.id}-${ctx.params.filename}`, {
             root: './entry-photo',
+            maxage: 1000*60*10,
         });
     });
 
     router.get('/video/:id-:filename', async function(ctx){
         await send(ctx, `${ctx.params.id}-${ctx.params.filename}`, {
             root: './entry-video',
+            maxage: 1000*60*10,
         });
     });
 
@@ -143,6 +145,7 @@ const app = new Application();{
     app.use(async function(ctx){
         if(ctx.request.method === "GET"){
             try{
+                ctx.response.headers.set("Cache-Control", "max-age=0, no-cache, no-store");
                 await send(ctx, ctx.request.url.pathname, {
                     root: './www-front',
                     index: "index.html",
